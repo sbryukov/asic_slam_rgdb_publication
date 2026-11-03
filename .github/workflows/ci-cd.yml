@@ -1,18 +1,160 @@
-name: Auto CI-CD Pipeline
+# =============================================================================
+#  CI/CD: build the paper PDF and the arXiv package on a self-hosted runner.
+#
+#  Runner requirements: Linux, TeX Live + latexmk + make already installed
+#  (see README.md, "Setting Up Ubuntu"). arxiv_latex_cleaner is optional.
+#
+#  Triggers:
+#    push / pull_request  -> build PDF + arXiv package, upload as artifacts
+#    tag v*  (e.g. v1.0)  -> additionally require no \TODO markers and
+#                            publish a GitHub Release with PDF + tar.gz
+#    workflow_dispatch    -> manual run from the Actions tab
+# =============================================================================
+name: ci-cd
 
-# 1. Choose what actions trigger the automation
 on:
   push:
-    branches: [ main, master ]
+    branches: ["**"]
+    tags: ["v*"]
+    paths-ignore: ["README.md", ".vscode/**"]
   pull_request:
-    branches: [ main, master ]
+  workflow_dispatch:
+
+# A newer push to the same branch cancels the running build.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
-  # 2. Continuous Integration (Build & Test)
-  build-and-test:
-    runs-on: ubuntu-latest
+  build:
+    name: Build PDF and arXiv package
+    # Security: never run code from forked PRs on a self-hosted machine.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, Linux]
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+
     steps:
-    - name: Check out repository code
-      uses: actions/checkout@v4
-    - name: Test piplines
-      run: ls -al
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+        with:
+          clean: true
+
+      - name: Check toolchain
+        run: |
+          set -euo pipefail
+          for t in pdflatex bibtex latexmk make; do
+            command -v "$t" >/dev/null || { echo "::error::$t not found on runner"; exit 1; }
+          done
+          pdflatex --version | head -1
+          latexmk --version | head -2 | tail -1
+          if command -v arxiv_latex_cleaner >/dev/null; then
+            echo "arxiv_latex_cleaner: available"
+          else
+            echo "::notice::arxiv_latex_cleaner not installed - comments will stay in the arXiv package"
+          fi
+
+      # The runner workspace persists between jobs - start from a clean state.
+      - name: Clean previous build
+        run: make distclean
+
+      - name: Build PDF
+        run: make pdf
+
+      - name: Check LaTeX log
+        run: |
+          set -uo pipefail
+          log=build/main.log
+          undef=$(grep -cE "(Citation|Reference) .* undefined" "$log" || true)
+          overfull=$(grep -c "^Overfull" "$log" || true)
+          todos=$(grep -rho '\\TODO{' main.tex sections tables | wc -l)
+          echo "Undefined refs/citations: $undef"
+          echo "Overfull boxes:           $overfull"
+          echo "TODO markers:             $todos"
+          [ "$undef" -eq 0 ] || echo "::warning::$undef undefined references/citations (see build/main.log)"
+          {
+            echo "### Build summary"
+            echo "| Check | Count |"
+            echo "|---|---|"
+            echo "| Pages | $(pdfinfo build/main.pdf 2>/dev/null | awk '/^Pages/{print $2}') |"
+            echo "| Undefined refs/citations | $undef |"
+            echo "| Overfull boxes | $overfull |"
+            echo '| `\TODO` markers | '"$todos"' |'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Build arXiv package
+        run: |
+          set -euo pipefail
+          make arxiv
+          # `make arxiv-check` only prints a message; fail CI explicitly here.
+          test -s build/arxiv_test/main.pdf || {
+            echo "::error::arXiv package does not compile, see build/arxiv_test/main.log"
+            exit 1
+          }
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-${{ github.sha }}
+          path: |
+            build/main.pdf
+            build/main.log
+            arxiv_submission.tar.gz
+          if-no-files-found: warn
+          retention-days: 30
+
+  release:
+    name: Publish GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: [self-hosted, Linux]
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Require final text (no TODO / placeholders)
+        run: |
+          set -uo pipefail
+          left=$(grep -rnE '\\(TODO|NUM|CITE)\b' main.tex sections tables || true)
+          if [ -n "$left" ]; then
+            echo "::error::Release tags require a final text. Remaining markers:"
+            echo "$left" | head -50
+            exit 1
+          fi
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: paper-${{ github.sha }}
+          path: dist
+
+      - name: Rename release files
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME}"
+          mv dist/build/main.pdf          "dist/asic_slam_${tag}.pdf"
+          mv dist/arxiv_submission.tar.gz "dist/asic_slam_${tag}_arxiv.tar.gz"
+          ls -l dist
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/asic_slam_${{ github.ref_name }}.pdf
+            dist/asic_slam_${{ github.ref_name }}_arxiv.tar.gz
+          generate_release_notes: true
