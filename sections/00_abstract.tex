@@ -5,10 +5,7 @@
 \begin{abstract}
 Simultaneous Localization and Mapping (SLAM) is a core capability of
 autonomous robots, drones, and AR/VR headsets, yet state-of-the-art
-algorithms remain too power-hungry for milliwatt-class edge platforms.
-\TODO{1--2 sentences: the specific bottleneck (e.g., feature extraction and
-bundle-adjustment back-end dominate latency and energy on embedded CPUs/GPUs).}
-In this paper we present \sysname, a \TODO{process node, e.g., 28-nm CMOS}
+algorithms remain too power-hungry for milliwatt-class edge platforms. The bottleneck of modern Edge AI SoC is memory bus and DMA are highly loads while data transferring before computation, also computation blocs such as NPU/TPU/GPU have general architecture and not optimized for SLAM. Specifically to SLAM and other sensor data processing, moving data from camera to CPU, feature extraction and then passing to computation block dominate latency and energy on SoC. In this paper we present \sysname, a \TODO{process node, e.g., 28-nm CMOS}
 ASIC accelerator for \TODO{visual / visual-inertial} SLAM that
 \TODO{key idea 1, e.g., a streaming feature front-end} and
 \TODO{key idea 2, e.g., a sparse Schur-complement back-end with on-chip
