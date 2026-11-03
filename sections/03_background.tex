@@ -1,0 +1,46 @@
+% =============================================================================
+\section{Background and Workload Analysis}
+\label{sec:background}
+% =============================================================================
+
+\subsection{SLAM Pipeline}
+\label{sec:background:pipeline}
+A typical keyframe-based visual(-inertial) SLAM system consists of a
+\emph{front-end}, which extracts and tracks features, and a \emph{back-end},
+which estimates the state by nonlinear optimization.
+The back-end solves
+\begin{equation}
+  \state^\star = \argmin_{\state}
+  \sum_{(i,j)\in\mathcal{E}}
+  \norm{\meas_{ij} - \pi\!\left(\pose_i, \landmark_j\right)}^2_{\infomat_{ij}}
+  + \sum_{k} \norm{\mathbf{r}^{\text{IMU}}_k(\state)}^2_{\infomat_k},
+  \label{eq:ba}
+\end{equation}
+where $\pose_i \in \SE{3}$ are keyframe poses, $\landmark_j\in\R^3$ are
+landmarks, $\pi(\cdot)$ is the camera projection, and
+$\mathbf{r}^{\text{IMU}}_k$ are pre-integrated inertial residuals~\cite{forster2017preintegration}.
+Each Gauss--Newton iteration solves the normal equations
+$\hess\,\Delta\state = -\mathbf{b}$, with $\hess = \jac^\top\infomat\jac$,
+typically via the Schur complement on the landmark block.
+
+\TODO{Briefly describe: feature detection (FAST/ORB), descriptor matching,
+outlier rejection (RANSAC), keyframe selection, local BA, loop closure.}
+
+\subsection{Profiling and Bottlenecks}
+\label{sec:background:profiling}
+\TODO{Profile the reference software on an embedded CPU. Insert
+runtime/energy breakdown per stage (Fig.~\ref{fig:profile}).
+Identify memory-bound vs.\ compute-bound kernels.}
+
+\begin{figure}[t]
+  \centering
+  % \includegraphics[width=\columnwidth]{profile_breakdown.pdf}
+  \fbox{\parbox[c][3.5cm][c]{0.9\columnwidth}{\centering
+        \TODO{Runtime / energy breakdown per pipeline stage}}}
+  \caption{Runtime breakdown of \TODO{reference SLAM} on \TODO{platform}.}
+  \label{fig:profile}
+\end{figure}
+
+\subsection{Design Requirements}
+\TODO{Derive target specs: frame rate, resolution, latency, power budget,
+accuracy (ATE/RPE), on-chip memory size.}

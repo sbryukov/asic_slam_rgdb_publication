@@ -1,0 +1,26 @@
+% =============================================================================
+\section{Related Work}
+\label{sec:related}
+% =============================================================================
+% Группировать работы по темам; в конце каждого абзаца — чем наша работа отличается.
+
+\subsection{SLAM Algorithms}
+Feature-based methods~\cite{mur2015orbslam,campos2021orbslam3},
+direct methods~\cite{engel2018dso}, and tightly coupled
+visual-inertial estimators~\cite{qin2018vins,forster2017preintegration}
+\TODO{short overview; which class our accelerator targets and why}.
+
+\subsection{SLAM on Embedded CPUs, GPUs and FPGAs}
+\TODO{Embedded software implementations, GPU acceleration, FPGA prototypes
+(e.g., ORB feature extraction on FPGA, BA on FPGA). Typical power/throughput.}
+
+\subsection{ASIC Accelerators for Localization and Mapping}
+Navion~\cite{suleiman2019navion} demonstrated a fully integrated
+visual-inertial odometry accelerator at \NUM~mW.
+\TODO{Other ASICs: CNN-based SLAM chips, feature-extraction ASICs,
+factor-graph processors.}
+
+\TODO{Summary table: Table~\ref{tab:sota} in \cref{sec:evaluation}
+compares the designs quantitatively.}
+\NOTE{Differentiate: what is new here (algorithm coverage, loop closure,
+mapping, energy per frame, process node).}

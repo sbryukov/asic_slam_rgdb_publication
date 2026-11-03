@@ -1,0 +1,50 @@
+% =============================================================================
+\section{Introduction}
+\label{sec:intro}
+% =============================================================================
+% План: (1) мотивация -> (2) почему существующие платформы не подходят ->
+% (3) наш подход -> (4) вклад (bullet list) -> (5) структура статьи
+
+% --- (1) Мотивация ---------------------------------------------------------
+Accurate, low-latency ego-motion estimation and mapping is a prerequisite for
+autonomous navigation of micro aerial vehicles, mobile robots, and
+head-mounted AR/VR devices~\cite{cadena2016past}.
+Modern feature-based and direct SLAM systems such as
+ORB-SLAM3~\cite{campos2021orbslam3} and VINS-Mono~\cite{qin2018vins}
+achieve centimeter-level accuracy, but \TODO{quantify: power / latency on
+embedded CPU (e.g., \NUM~W on Jetson-class SoC)}.
+
+% --- (2) Проблема ------------------------------------------------------------
+\TODO{Explain the gap: power budget of target platforms (e.g., nano-drones
+$<$\NUM~mW for compute), memory bandwidth limits, irregular sparse workloads
+in the back-end that map poorly to GPUs.}
+Prior accelerators~\cite{suleiman2019navion,li2019cnn_slam_asic}
+\TODO{what they did and what they miss}.
+
+% --- (3) Подход --------------------------------------------------------------
+To address these challenges, we propose \sysname, \TODO{one-paragraph
+description of the architecture and the central insight}.
+
+% --- (4) Вклад -------------------------------------------------------------
+The main contributions of this work are:
+\begin{itemize}
+  \item \TODO{Contribution 1: algorithm--hardware co-design, e.g.,
+        hardware-friendly reformulation of \ldots};
+  \item \TODO{Contribution 2: micro-architecture, e.g., streaming front-end
+        with \NUM~KB line buffers instead of full-frame storage};
+  \item \TODO{Contribution 3: silicon implementation and measurement in
+        \NUM-nm CMOS};
+  \item \TODO{Contribution 4: comprehensive evaluation against CPU, GPU,
+        FPGA and ASIC baselines on public datasets}.
+\end{itemize}
+
+% --- (5) Структура -----------------------------------------------------------
+The remainder of the paper is organized as follows.
+\Cref{sec:related} reviews related work.
+\Cref{sec:background} summarizes the SLAM pipeline and profiles its
+computational bottlenecks.
+\Cref{sec:architecture} presents the proposed architecture, and
+\cref{sec:implementation} describes its physical implementation.
+\Cref{sec:evaluation} reports experimental results,
+\cref{sec:discussion} discusses limitations, and
+\cref{sec:conclusion} concludes the paper.

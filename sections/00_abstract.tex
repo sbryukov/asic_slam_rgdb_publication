@@ -1,0 +1,25 @@
+% =============================================================================
+%  Abstract (arXiv: <= 1920 символов в форме подачи; текст в PDF может совпадать)
+%  Структура: контекст -> проблема -> что сделано -> ключевые числа -> вывод
+% =============================================================================
+\begin{abstract}
+Simultaneous Localization and Mapping (SLAM) is a core capability of
+autonomous robots, drones, and AR/VR headsets, yet state-of-the-art
+algorithms remain too power-hungry for milliwatt-class edge platforms.
+\TODO{1--2 sentences: the specific bottleneck (e.g., feature extraction and
+bundle-adjustment back-end dominate latency and energy on embedded CPUs/GPUs).}
+In this paper we present \sysname, a \TODO{process node, e.g., 28-nm CMOS}
+ASIC accelerator for \TODO{visual / visual-inertial} SLAM that
+\TODO{key idea 1, e.g., a streaming feature front-end} and
+\TODO{key idea 2, e.g., a sparse Schur-complement back-end with on-chip
+marginalization}.
+The chip occupies \NUM~\si{\milli\metre\squared}, runs at \NUM~\si{\mega\hertz},
+and processes \NUM\fps\ VGA input while consuming \NUM~\si{\milli\watt}
+--- \NUM$\times$ more energy-efficient than \TODO{baseline platform}
+with \TODO{no / $<$X\%} accuracy degradation on the EuRoC and TUM RGB-D
+benchmarks.
+\TODO{One-sentence take-away / availability of RTL or dataset.}
+\end{abstract}
+
+\noindent\textbf{Keywords:} SLAM, ASIC, hardware accelerator, visual odometry,
+bundle adjustment, energy efficiency, edge robotics.

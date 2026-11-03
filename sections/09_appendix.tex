@@ -1,0 +1,23 @@
+% =============================================================================
+\section{Supplementary Material}
+\label{sec:appendix}
+% =============================================================================
+
+\subsection{Fixed-Point Format Details}
+\TODO{Table of Q-formats per signal and quantization error analysis.}
+
+\subsection{Additional Results}
+\TODO{Per-sequence trajectories, extra plots.}
+
+\subsection{RTL Snippet}
+\begin{lstlisting}[language=Verilog,caption={Example: pipelined MAC unit (placeholder).}]
+module mac #(parameter W = 16) (
+  input  logic                 clk, rst_n, en,
+  input  logic signed [W-1:0]  a, b,
+  output logic signed [2*W+7:0] acc
+);
+  always_ff @(posedge clk or negedge rst_n)
+    if (!rst_n)  acc <= '0;
+    else if (en) acc <= acc + a * b;
+endmodule
+\end{lstlisting}

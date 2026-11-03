@@ -1,0 +1,28 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.bcf
+*.xdv
+main.pdf
+
+# arXiv packaging
+arxiv_submission/
+arxiv_submission.tar.gz
+.arxiv_test/
+
+# OS / editor
+.DS_Store
+*~
+
+# Build directory
+build/

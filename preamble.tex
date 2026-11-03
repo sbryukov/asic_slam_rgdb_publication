@@ -1,0 +1,74 @@
+% =============================================================================
+%  preamble.tex — подключение пакетов
+%  Все пакеты входят в TeX Live и доступны на сервере arXiv.
+% =============================================================================
+
+% --- Кодировка, шрифты, язык ------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[english]{babel}
+% Если нужны русские вставки (например, в комментариях к рисункам):
+% \usepackage[T2A,T1]{fontenc}
+% \usepackage[russian,english]{babel}
+
+% --- Геометрия страницы ----------------------------------------------------
+\usepackage[margin=2cm,columnsep=0.8cm]{geometry}
+
+% --- Математика ------------------------------------------------------------
+\usepackage{amsmath,amssymb,amsfonts,amsthm,mathtools}
+\usepackage{bm}
+
+% --- Графика и рисунки -----------------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc,backgrounds}
+\usepackage[caption=false,font=footnotesize]{subfig}
+\usepackage{float}
+
+% --- Таблицы ---------------------------------------------------------------
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{makecell}
+\usepackage{threeparttable}
+
+% --- Единицы измерения (мВт, МГц, мм^2 ...) ---------------------------------
+\usepackage{siunitx}
+\sisetup{detect-all, range-phrase = --, per-mode = symbol}
+
+% --- Алгоритмы -------------------------------------------------------------
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% --- Листинги (Verilog/SystemVerilog, C++) -----------------------------------
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue!70!black}\bfseries,
+  commentstyle=\color{green!45!black},
+  stringstyle=\color{red!60!black},
+  numbers=left, numberstyle=\tiny, frame=single,
+  breaklines=true, columns=fullflexible, captionpos=b,
+}
+
+% --- Библиография (natbib + BibTeX: arXiv принимает готовый .bbl) -------------
+\usepackage[numbers,sort&compress]{natbib}
+
+% --- Прочее ------------------------------------------------------------------
+\usepackage{xspace}
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage{url}
+\usepackage{todonotes}   % \todo{...}; для финальной версии: [disable]
+
+% --- Гиперссылки (подключать последними) -----------------------------------
+\usepackage[hidelinks,breaklinks]{hyperref}
+\usepackage[nameinlink,capitalise,noabbrev]{cleveref}
+
+% --- Теоремы / определения -------------------------------------------------
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}

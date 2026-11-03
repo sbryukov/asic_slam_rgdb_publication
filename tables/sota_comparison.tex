@@ -1,0 +1,23 @@
+% Сравнение с SOTA (таблица на всю ширину страницы, table*).
+\small
+\begin{threeparttable}
+\begin{tabular}{@{}lccccc@{}}
+  \toprule
+                       & Navion~\cite{suleiman2019navion} & \TODO{Work B} & \TODO{Work C} & \TODO{FPGA} & \textbf{\sysname} \\
+  \midrule
+  Technology (nm)      & 65   & \NUM & \NUM & --   & \NUM \\
+  Algorithm            & VIO  & \NUM & \NUM & \NUM & \TODO{VI-SLAM} \\
+  Loop closure         & No   & \NUM & \NUM & \NUM & \TODO{Yes/No} \\
+  Area (mm$^2$)        & \NUM & \NUM & \NUM & --   & \NUM \\
+  Frequency (MHz)      & \NUM & \NUM & \NUM & \NUM & \NUM \\
+  Resolution           & \NUM & \NUM & \NUM & \NUM & $640\times480$ \\
+  Frame rate (FPS)     & \NUM & \NUM & \NUM & \NUM & \NUM \\
+  Power (mW)           & \NUM & \NUM & \NUM & \NUM & \NUM \\
+  Energy/frame (mJ)    & \NUM & \NUM & \NUM & \NUM & \NUM \\
+  Measured?            & Yes  & \NUM & \NUM & \NUM & Yes \\
+  \bottomrule
+\end{tabular}
+\begin{tablenotes}\footnotesize
+  \item \TODO{Notes: technology scaling assumptions, simulated vs.\ measured.}
+\end{tablenotes}
+\end{threeparttable}

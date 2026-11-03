@@ -1,0 +1,54 @@
+{
+  // --- LaTeX Workshop (James-Yu.latex-workshop) ---
+  "latex-workshop.latex.rootFile.doNotPrompt": true,
+  "latex-workshop.latex.rootFile.useSubFile": false,
+  "latex-workshop.latex.recipe.default": "latexmk (pdflatex)",
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.outDir": "%DIR%/build",
+  "latex-workshop.latex.recipes": [
+    { "name": "latexmk (pdflatex)", "tools": ["latexmk"] },
+    { "name": "pdflatex -> bibtex -> pdflatex x2", "tools": ["pdflatex", "bibtex", "pdflatex", "pdflatex"] }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk",
+      "command": "latexmk",
+      "args": ["-pdf", "-outdir=build", "-synctex=1", "-interaction=nonstopmode", "-file-line-error", "main.tex"],
+      "env": {}
+    },
+    {
+      "name": "pdflatex",
+      "command": "pdflatex",
+      "args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "-output-directory=build", "main.tex"]
+    },
+    { "name": "bibtex", "command": "bibtex", "args": ["build/main"] }
+  ],
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.synctex.afterBuild.enabled": true,
+  "latex-workshop.latex.autoClean.run": "never",
+  "latex-workshop.message.warning.show": false,
+  "latex-workshop.intellisense.package.enabled": true,
+
+  // --- Проверка орфографии (Code Spell Checker / LTeX) ---
+  "cSpell.language": "en,ru",
+  "cSpell.enableFiletypes": ["latex", "bibtex"],
+  "ltex.language": "en-US",
+  "ltex.enabled": ["latex", "bibtex", "markdown"],
+
+  // --- Редактор ---
+  "[latex]": {
+    "editor.wordWrap": "on",
+    "editor.rulers": [80],
+    "editor.tabSize": 2,
+    "editor.formatOnSave": false
+  },
+  "files.associations": { "*.tikz": "latex" },
+  "files.exclude": {
+    "**/*.aux": true, "**/*.fdb_latexmk": true, "**/*.fls": true,
+    "**/*.log": true, "**/*.out": true, "**/*.synctex.gz": true,
+    "**/*.blg": true, "**/*.toc": true, ".arxiv_test": true,
+    "build/*.{aux,bbl,blg,fdb_latexmk,fls,log,out,synctex.gz,toc,run.xml}": true
+  },
+  "todo-tree.regex.regex": "(\\\\TODO\\{|\\\\NOTE\\{|% ?TODO)",
+  "todo-tree.general.tags": ["\\TODO{", "\\NOTE{", "TODO"]
+}

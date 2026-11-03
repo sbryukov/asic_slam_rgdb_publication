@@ -1,0 +1,51 @@
+% =============================================================================
+\section{Experimental Evaluation}
+\label{sec:evaluation}
+% =============================================================================
+
+\subsection{Methodology}
+\label{sec:eval:method}
+\paragraph{Datasets.}
+We evaluate on EuRoC MAV~\cite{burri2016euroc} and
+TUM RGB-D~\cite{sturm2012tum} \TODO{(+ KITTI / own dataset?)}.
+
+\paragraph{Metrics.}
+Accuracy is measured by absolute trajectory error (ATE) and relative pose
+error (RPE)~\cite{sturm2012tum}; hardware efficiency by throughput (FPS),
+latency, power, energy per frame and area.
+
+\paragraph{Baselines.}
+\TODO{Software on ARM Cortex-A / x86, embedded GPU (Jetson), FPGA designs,
+prior ASICs.}
+
+\subsection{Accuracy}
+\label{sec:eval:accuracy}
+\TODO{ATE/RPE table: floating-point reference vs.\ fixed-point model vs.\
+chip measurements, per sequence.}
+
+\begin{table}[t]
+  \centering
+  \caption{ATE RMSE (\si{\metre}) on EuRoC sequences.}
+  \label{tab:accuracy}
+  \input{tables/accuracy}
+\end{table}
+
+\subsection{Performance and Energy Efficiency}
+\label{sec:eval:perf}
+\TODO{Throughput and energy vs.\ baselines; voltage/frequency scaling
+(shmoo plot); energy per frame breakdown.}
+
+\subsection{Ablation Study}
+\TODO{Contribution of each optimization (e.g., without streaming front-end,
+without sparsity exploitation, different window sizes).}
+
+\subsection{Comparison with State of the Art}
+\label{sec:eval:sota}
+\Cref{tab:sota} compares \sysname\ with previously published accelerators.
+
+\begin{table*}[t]
+  \centering
+  \caption{Comparison with state-of-the-art SLAM/VIO accelerators.}
+  \label{tab:sota}
+  \input{tables/sota_comparison}
+\end{table*}

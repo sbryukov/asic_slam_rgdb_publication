@@ -1,0 +1,37 @@
+% =============================================================================
+\section{Implementation}
+\label{sec:implementation}
+% =============================================================================
+
+\subsection{Design Flow}
+\TODO{RTL language (SystemVerilog/Chisel/HLS), verification against
+bit-accurate C++/Python model, synthesis and P\&R tools, PDK, standard-cell
+library, SRAM compilers.}
+
+\subsection{Chip Summary}
+\Cref{tab:chip} summarizes the main characteristics of the fabricated chip,
+and \cref{fig:die} shows the die micrograph.
+
+\begin{table}[t]
+  \centering
+  \caption{Chip summary.}
+  \label{tab:chip}
+  \input{tables/chip_summary}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  % \includegraphics[width=0.8\columnwidth]{die_photo.jpg}
+  \fbox{\parbox[c][4cm][c]{0.8\columnwidth}{\centering
+        \TODO{Die micrograph / layout with annotated blocks}}}
+  \caption{Die micrograph of \sysname\ with annotated functional blocks.}
+  \label{fig:die}
+\end{figure}
+
+\subsection{Area and Power Breakdown}
+\TODO{Pie charts or stacked bars: area/power per block (front-end,
+back-end, SRAM, control, I/O).}
+
+\subsection{Test Setup}
+\TODO{Measurement board, FPGA host, clock source, power measurement method,
+sensor data playback.}

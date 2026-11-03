@@ -1,0 +1,34 @@
+% Блок-схема архитектуры (TikZ). Редактируйте блоки под реальную архитектуру.
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+    node distance = 4mm and 6mm,
+    blk/.style  = {draw, rounded corners=2pt, minimum width=22mm,
+                   minimum height=8mm, align=center, font=\footnotesize},
+    fe/.style   = {blk, fill=blue!10},
+    be/.style   = {blk, fill=orange!15},
+    mem/.style  = {blk, fill=gray!15},
+    io/.style   = {blk, fill=green!10},
+    arr/.style  = {-{Stealth[length=2mm]}, thick},
+  ]
+  \node[io]  (cam)  {Camera / IMU\\interface};
+  \node[fe, right=of cam]  (det)  {Feature\\detection};
+  \node[fe, right=of det]  (trk)  {Descriptor \&\\matching};
+  \node[mem, below=of trk] (fbuf) {Feature / map\\SRAM};
+  \node[be, left=of fbuf]  (jac)  {Jacobian \&\\Hessian unit};
+  \node[be, left=of jac]   (sol)  {Schur +\\Cholesky solver};
+  \node[io, below=of jac]  (ctrl) {Controller \&\\host I/F};
+
+  \draw[arr] (cam) -- (det);
+  \draw[arr] (det) -- (trk);
+  \draw[arr] (trk) -- (fbuf);
+  \draw[arr] (fbuf) -- (jac);
+  \draw[arr] (jac) -- (sol);
+  \draw[arr] (sol) |- (ctrl);
+  \draw[arr, dashed] (ctrl) -| (fbuf);
+
+  \begin{scope}[on background layer]
+    \node[draw, dashed, inner sep=3mm, fit=(det)(trk)(fbuf)(jac)(sol)(ctrl),
+          label={[font=\footnotesize\itshape]above:\sysname}] {};
+  \end{scope}
+\end{tikzpicture}%
+}

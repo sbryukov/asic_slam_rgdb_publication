@@ -1,0 +1,57 @@
+% =============================================================================
+\section{Proposed Architecture}
+\label{sec:architecture}
+% =============================================================================
+
+\subsection{Overview}
+\Cref{fig:arch} shows the top-level architecture of \sysname.
+\TODO{Describe data flow: sensor interface $\rightarrow$ front-end
+$\rightarrow$ feature buffer $\rightarrow$ back-end $\rightarrow$ host.}
+
+\begin{figure}[t]
+  \centering
+  \input{figures/arch_overview.tikz}
+  \caption{Top-level architecture of \sysname.}
+  \label{fig:arch}
+\end{figure}
+
+\subsection{Algorithm--Hardware Co-Design}
+\label{sec:arch:codesign}
+\TODO{Hardware-friendly modifications of the algorithm: fixed-point
+formats (Q-format per signal), approximations, reduced descriptor length,
+sliding-window size. Quantify their accuracy impact (refer to
+\cref{sec:eval:accuracy}).}
+
+\subsection{Front-End: Feature Extraction and Tracking}
+\label{sec:arch:frontend}
+\TODO{Streaming pipeline, line buffers, FAST/Harris detector, NMS,
+descriptor/patch computation, matching engine, throughput (pixels/cycle).}
+
+\subsection{Back-End: Optimization Engine}
+\label{sec:arch:backend}
+\TODO{Jacobian/Hessian construction unit, Schur complement, Cholesky solver,
+marginalization; PE array organization; sparsity exploitation.}
+
+\begin{algorithm}[t]
+  \caption{Sliding-window Gauss--Newton (hardware schedule)}
+  \label{alg:gn}
+  \begin{algorithmic}[1]
+    \Require Window states $\state$, measurements $\{\meas_{ij}\}$
+    \For{$it = 1$ \textbf{to} $N_{\text{iter}}$}
+      \State Compute residuals and Jacobians $\jac$ \Comment{Jacobian unit}
+      \State Accumulate $\hess \gets \jac^\top\infomat\jac$, $\mathbf{b} \gets \jac^\top\infomat\mathbf{r}$
+      \State Schur complement on landmark block \Comment{Schur unit}
+      \State Solve reduced system by Cholesky \Comment{Solver}
+      \State Back-substitute and update $\state \gets \state \boxplus \Delta\state$
+    \EndFor
+    \State Marginalize oldest keyframe
+  \end{algorithmic}
+\end{algorithm}
+
+\subsection{Memory Hierarchy and Dataflow}
+\label{sec:arch:memory}
+\TODO{On-chip SRAM banks, sizes, bandwidth, data reuse, off-chip DRAM
+traffic (if any), double buffering.}
+
+\subsection{Control and Host Interface}
+\TODO{Controller (FSM / RISC-V core), configuration registers, SPI/MIPI.}

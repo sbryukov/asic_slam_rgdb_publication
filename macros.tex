@@ -1,0 +1,39 @@
+% =============================================================================
+%  macros.tex — пользовательские команды
+% =============================================================================
+
+% --- Пометки для работы над текстом ----------------------------------------
+% Чтобы скрыть все пометки в финальной версии: \renewcommand{\TODO}[1]{}
+\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[TODO: #1]}}}
+\newcommand{\NOTE}[1]{\textcolor{blue}{\textit{[Note: #1]}}}
+\newcommand{\CITE}{\textcolor{orange}{\textbf{[cite]}}}
+\newcommand{\NUM}{\textcolor{red}{\textbf{XX}}}   % заглушка для чисел
+
+% --- Название системы (поменять в одном месте) ------------------------------
+\newcommand{\sysname}{\textsc{SlamChip}\xspace}
+
+% --- Сокращения ------------------------------------------------------------
+\newcommand{\eg}{e.g.,\xspace}
+\newcommand{\ie}{i.e.,\xspace}
+\newcommand{\etal}{\textit{et al.}\xspace}
+\newcommand{\wrt}{w.r.t.\xspace}
+
+% --- Математические обозначения (SLAM) --------------------------------------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\SE}[1]{\mathrm{SE}(#1)}
+\newcommand{\SO}[1]{\mathrm{SO}(#1)}
+\newcommand{\pose}{\mathbf{T}}            % поза камеры
+\newcommand{\rot}{\mathbf{R}}             % вращение
+\newcommand{\trans}{\mathbf{t}}           % перенос
+\newcommand{\landmark}{\mathbf{p}}        % 3D-точка карты
+\newcommand{\meas}{\mathbf{z}}            % измерение
+\newcommand{\state}{\mathbf{x}}           % вектор состояния
+\newcommand{\jac}{\mathbf{J}}             % якобиан
+\newcommand{\hess}{\mathbf{H}}            % (приближённый) гессиан
+\newcommand{\infomat}{\boldsymbol{\Omega}}% информационная матрица
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+% --- Аппаратные метрики -----------------------------------------------------
+\newcommand{\fps}{\,FPS}
+\newcommand{\mJpf}{\,\si{\milli\joule}/frame}

@@ -1,0 +1,9 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Build PDF",            "type": "shell", "command": "make pdf",   "group": { "kind": "build", "isDefault": true }, "problemMatcher": [] },
+    { "label": "Build arXiv package",  "type": "shell", "command": "make arxiv", "problemMatcher": [] },
+    { "label": "Clean",                "type": "shell", "command": "make distclean", "problemMatcher": [] },
+    { "label": "Word count",           "type": "shell", "command": "make wordcount", "problemMatcher": [] }
+  ]
+}
