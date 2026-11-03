@@ -8,6 +8,9 @@
 #    push / pull_request  -> build PDF + arXiv package, upload as artifacts
 #    tag v*  (e.g. v1.0)  -> additionally require no \TODO markers and
 #                            publish a GitHub Release with PDF + tar.gz
+#    push to default branch / tag v* / manual run on them
+#                         -> deploy_wiki: publish the article text and the
+#                            PDF download link on the Wiki "Home" page
 #    workflow_dispatch    -> manual run from the Actions tab
 # =============================================================================
 name: ci-cd
@@ -158,3 +161,115 @@ jobs:
             dist/asic_slam_${{ github.ref_name }}.pdf
             dist/asic_slam_${{ github.ref_name }}_arxiv.tar.gz
           generate_release_notes: true
+
+  # ---------------------------------------------------------------------------
+  #  Wiki: Home.md = PDF download link + full article text (LaTeX -> Markdown
+  #  via pandoc), PDF and rendered figures stored in the wiki repository.
+  #  One-time setup: open the "Wiki" tab and create any first page - the
+  #  <repo>.wiki.git repository does not exist until then.
+  #  Push uses GITHUB_TOKEN; if your org blocks that, add a fine-grained PAT
+  #  with "Contents: read/write" as the secret WIKI_TOKEN.
+  # ---------------------------------------------------------------------------
+  deploy_wiki:
+    name: Deploy article to Wiki
+    needs: build
+    if: >-
+      github.event_name != 'pull_request' &&
+      (github.ref == format('refs/heads/{0}', github.event.repository.default_branch) ||
+       startsWith(github.ref, 'refs/tags/v'))
+    runs-on: [self-hosted, Linux]
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    # Wiki is a single shared repo: never push from two runs at once.
+    concurrency:
+      group: ${{ github.workflow }}-wiki
+      cancel-in-progress: false
+    env:
+      PANDOC_VERSION: "3.5"
+      WIKI_PDF_NAME: asic_slam.pdf
+      WIKI_BASE_URL: ${{ github.server_url }}/${{ github.repository }}/wiki
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+        with:
+          clean: true
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: paper-${{ github.sha }}
+          path: dist
+
+      # pandoc >= 3.1 is needed (citeproc, Figure blocks). Use the system one
+      # if it is recent enough, otherwise cache a static build on the runner.
+      - name: Set up pandoc
+        run: |
+          set -euo pipefail
+          if command -v pandoc >/dev/null &&
+             printf '3.1\n%s\n' "$(pandoc --version | awk 'NR==1{print $2}')" | sort -V -C; then
+            echo "Using system $(pandoc --version | head -1)"
+            exit 0
+          fi
+          case "$(uname -m)" in
+            x86_64)  arch=amd64 ;;
+            aarch64) arch=arm64 ;;
+            *) echo "::error::unsupported arch $(uname -m) - install pandoc >= 3.1 manually"; exit 1 ;;
+          esac
+          dir="${RUNNER_TOOL_CACHE:-$HOME/.cache}/pandoc-${PANDOC_VERSION}"
+          if [ ! -x "$dir/bin/pandoc" ]; then
+            mkdir -p "$dir"
+            curl -fsSL "https://github.com/jgm/pandoc/releases/download/${PANDOC_VERSION}/pandoc-${PANDOC_VERSION}-linux-${arch}.tar.gz" \
+              | tar -xz -C "$dir" --strip-components=1
+          fi
+          echo "$dir/bin" >> "$GITHUB_PATH"
+          "$dir/bin/pandoc" --version | head -1
+
+      - name: Check toolchain
+        run: |
+          set -euo pipefail
+          for t in pandoc python3 pdflatex pdftocairo git; do
+            command -v "$t" >/dev/null || { echo "::error::$t not found on runner"; exit 1; }
+          done
+
+      - name: Build wiki page
+        run: bash scripts/wiki/build.sh build/wiki dist/build/main.pdf
+
+      - name: Publish to wiki
+        env:
+          TOKEN: ${{ secrets.WIKI_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          auth="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)"
+          url="${{ github.server_url }}/${{ github.repository }}.wiki.git"
+          rm -rf build/wiki_repo
+          git -c http.extraheader="$auth" clone --depth 1 "$url" build/wiki_repo || {
+            echo "::error::Cannot clone $url. Enable the Wiki and create the first page once in the GitHub UI (Wiki tab -> Create the first page)."
+            exit 1
+          }
+          cd build/wiki_repo
+          # only Home.md and assets/ are managed by CI; other wiki pages are kept
+          rm -rf assets
+          cp -r ../wiki/. .
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Wiki is up to date"
+          else
+            git -c user.name="github-actions[bot]" \
+                -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+                commit -q -m "Update paper: ${GITHUB_REF_NAME} @ ${GITHUB_SHA::7}"
+            for i in 1 2 3; do
+              git -c http.extraheader="$auth" push origin HEAD && break
+              [ "$i" = 3 ] && { echo "::error::push to wiki failed"; exit 1; }
+              git -c http.extraheader="$auth" pull --rebase --depth 1 origin HEAD
+            done
+          fi
+          {
+            echo "### Wiki"
+            echo "- Page: ${WIKI_BASE_URL}"
+            echo "- PDF: ${WIKI_BASE_URL}/assets/${WIKI_PDF_NAME}"
+          } >> "$GITHUB_STEP_SUMMARY"

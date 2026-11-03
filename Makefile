@@ -5,7 +5,7 @@ ARXIV   = arxiv_submission
 BUILD   = build
 LATEXMK = latexmk -pdf -outdir=$(BUILD) -interaction=nonstopmode -file-line-error
 
-.PHONY: all pdf watch clean distclean arxiv arxiv-check wordcount
+.PHONY: all pdf watch clean distclean arxiv arxiv-check wiki wordcount
 
 all: pdf
 
@@ -44,6 +44,12 @@ arxiv-check:
 	  pdflatex -interaction=nonstopmode $(MAIN).tex >/dev/null && \
 	  echo ">> arXiv-проверка пройдена" || echo "!! Ошибка сборки, см. $(BUILD)/arxiv_test/$(MAIN).log"
 	@echo ">> Оставшихся TODO в исходниках: $$(grep -rho '\\TODO{' sections tables $(MAIN).tex | wc -l)"
+
+# Страница для GitHub Wiki: build/wiki/Home.md (текст статьи + ссылка на PDF)
+# и build/wiki/assets/ (PDF, рисунки в PNG). Нужны pandoc >= 3.1, python3,
+# pdftocairo (poppler-utils). В CI публикуется стадией deploy_wiki.
+wiki: pdf
+	bash scripts/wiki/build.sh $(BUILD)/wiki $(BUILD)/$(MAIN).pdf
 
 wordcount:
 	@texcount -inc -total -sum $(MAIN).tex 2>/dev/null || echo "texcount не установлен"

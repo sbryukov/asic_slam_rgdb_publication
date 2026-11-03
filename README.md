@@ -1,4 +1,4 @@
-# ASIC SLAM — arXiv Paper
+# ASIC SLAM 
 
 LaTeX sources for a paper on an ASIC accelerator for SLAM. The setup uses the `article` class, `natbib`/BibTeX and `pdflatex` — a combination that compiles reliably on the arXiv build server.
 
@@ -14,6 +14,7 @@ tables/               tables (included via \input)
 figures/              figures (PDF/PNG/JPG, TikZ diagrams *.tikz)
 .vscode/              LaTeX Workshop settings, tasks, snippets
 Makefile, .latexmkrc  build configuration
+scripts/wiki/         LaTeX -> GitHub Wiki conversion (make wiki, CI deploy_wiki)
 build/                PDF and build artifacts (created automatically)
 ```
 
@@ -151,6 +152,19 @@ Pre-submission checklist:
 - [ ] abstract in the submission form ≤ 1920 characters, with no LaTeX macros such as `\sysname`;
 - [ ] primary category (`cs.AR`, cross-list `cs.RO`, `cs.CV`) and license selected;
 - [ ] entries in `references.bib` checked against their DOIs (`li2019cnn_slam_asic` is a placeholder and must be replaced).
+
+## Wiki
+
+The CI stage `deploy_wiki` (on pushes to the default branch and on `v*` tags) publishes the paper to the repository Wiki:
+
+- **Home** page: title, authors, a **Download PDF** link, abstract, table of contents and the full article text (converted from LaTeX with pandoc: numbered sections, cross-references, numeric citations, tables, math);
+- `assets/asic_slam.pdf` and `assets/figures/*.png` (TikZ figures, algorithms and placeholders rendered to PNG) are committed to the `<repo>.wiki.git` repository.
+
+Only `Home.md` and `assets/` are overwritten; other wiki pages are kept.
+
+One-time setup: enable the Wiki in the repository settings and create any first page (the wiki repository does not exist until then). The job pushes with `GITHUB_TOKEN`; if that is not allowed, add a fine-grained token with *Contents: read and write* as the secret `WIKI_TOKEN`. Runner needs `python3` and `pdftocairo` (`sudo apt install poppler-utils`); pandoc ≥ 3.1 is downloaded automatically if the system one is older.
+
+Local preview: `make wiki` → `build/wiki/Home.md` (requires `pandoc` ≥ 3.1).
 
 ## Troubleshooting
 
